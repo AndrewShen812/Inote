@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">云笔记</string>
+    <string name="title_activity_edit_note">EditNoteActivity</string>
+    <string name="edit_note_title_hint">编辑标题</string>
+    <string name="edit_note_content_hint">编辑内容</string>
+    <string name="text_add_note">添    加</string>
+    <string name="text_save">保    存</string>
+    <string name="text_no_note_tips">暂无内容</string>
+    <string name="text_login_tips">登陆百度云</string>
+    <string name="text_page_tips">页面</string>
+    <string name="text_note_count">共%d个笔记</string>
+    <string name="text_bill_count">共%d笔账单</string>
+    <string name="text_type_note">笔记</string>
+    <string name="text_type_tally">账单</string>
+    <string name="text_bill_day">天</string>
+    <string name="text_bill_week">周</string>
+    <string name="text_bill_month">月</string>
+    <string name="text_bill_year">年</string>
+    <string name="text_bill_income">收入</string>
+    <string name="text_bill_expense">支出</string>
+
+</resources>

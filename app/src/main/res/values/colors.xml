@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 基础颜色定义 -->
+    <!-- 白色 -->
+    <color name="white">#FFFFFF</color>
+    <!-- 黑色 -->
+    <color name="black">#000000</color>
+    <!-- 灰色 -->
+    <color name="gray">#ADADAD</color>
+    <!-- 浅灰 -->
+    <color name="light_gray">#EEEEEE</color>
+    <!-- 深橘黄色 -->
+    <color name="deep_orange">#FF6600</color>
+    <!-- 浅橘黄色 -->
+    <color name="light_orange">#FFD18C</color>
+    <!-- 浅蓝色 -->
+    <color name="light_blue">#01CAD4</color>
+    <!-- 深蓝色 -->
+    <color name="deep_blue">#01CAD4</color>
+    <color name="lighter_gray">#FAFAFA</color>
+    <color name="light_black">#424242</color>
+    <color name="lighted_black">#676767</color>
+    <color name="lightes_black">#D8D8D8</color>
+    <!-- 银灰色，浅 -->
+    <color name="activity_add_passenger_tips">#EBEBEB</color>
+    <!-- 银灰色，深 -->
+    <color name="activity_add_passenger_tips_choice">#E1E1E1</color>
+    <!-- 浅灰 -->
+    <color name="item_gap">#CCCCCC</color>
+    <color name="calendar_grid_enable">#E4F1F1</color>
+    <color name="calendar_grid_normal">#C7E2E2</color>
+    <!-- 蓝色 -->
+    <color name="poy_comfrim_link">#3399FF</color>
+    <color name="main_tab_selected">#0099CC</color>
+    <color name="main_tab_unselected">#666666</color>
+    
+    <color name="share_redpackage_bg">#FFEEEE</color>
+    <!-- <color name="tab_background">#002C40</color> -->
+
+    <!-- 页面背景颜色 -->
+    <color name="activity_bg_color_white">@color/white</color>
+    
+    <!-- 字体颜色 -->
+    <color name="font_light_gray">#BDBDBD</color>
+    <color name="font_major_color">#333333</color>
+    <color name="font_minor_color">#999999</color>
+    <color name="font_underliner_color">#FF9900</color>
+    <color name="font_green_color">#33CC00</color>
+    <color name="font_red_color">#FF0000</color>
+    <color name="font_bule_color">#00CAD3</color>
+    <color name="font_bule_color2">@color/main_tab_selected</color>
+    <color name="font_orange_color">#FFA41D</color>
+    <!-- 返回按钮 -->
+    <color name="nav_back_press">#016065</color>
+    <color name="nav_back_normal">#01A5AD</color>
+    <!-- 主页metro -->
+    <color name="home_order_unclick">#FB667A</color>
+    <color name="home_order_clicked">#FB4A61</color>
+    <color name="home_book_clicked">#01ADB6</color>
+    <color name="home_opinion_unclick">#F48221</color>
+    <color name="home_opinion_clicked">#D9670B</color>
+    <color name="home_usercenter_unclick">#1BC266</color>
+    <color name="home_usercenter_clicked">#18AB5A</color>
+    <color name="home_my_msg_unclick">#0099FF</color>
+    <color name="home_my_msg_clicked">#007BCE</color>
+    <color name="home_hotel_unclick">#FF6699</color>
+    <color name="home_hotel_clicked">#FF3375</color>
+
+    <!-- 机票订单的状态颜色 -->
+    <color name="order_wait_pay">@color/deep_orange</color>
+    <color name="order_payed">@color/font_red_color</color>
+    <color name="order_ticketing">@color/font_green_color</color>
+    <color name="order_ticheted">#3366FF</color>
+    <color name="order_refunding">@color/black</color>
+    <color name="order_cancel">@color/nav_back_normal</color>
+    
+    <!-- 对话框的颜色 -->
+    <color name="notify_bg">#F5F5F5</color>
+    <color name="notify_btn_bg_white">@color/white</color>
+    <color name="updatebtn_bg_clicked">@color/light_blue</color>
+    <color name="lighter_bule">#00ACBB</color>
+    <color name="middle_black">#585858</color>
+    <color name="btn_passger_tv">#F4C20C</color>
+    <color name="tran">#D0000000</color>
+    <color name="dark_gray">#5B5B5B</color>
+
+    <!-- 酒店订单状态颜色 -->
+    <color name="hotel_order_used">#55DD93</color>
+    <color name="hotel_order_unuse">@color/font_underliner_color</color>
+    <color name="hotel_order_unrefund">@color/deep_orange</color>
+    <color name="hotel_order_cancel">@color/font_minor_color</color>
+    <color name="hotel_tip_color">#FF3300</color>
+
+    <!-- 火车相关 -->
+    <color name="home_railway_unclick">@color/font_underliner_color</color>
+    <color name="home_railway_clicked">#D58000</color>
+    <color name="green">#00CC00</color>
+    <color name="background_pre_pay">#FFEBD7</color>
+    <color name="background_guarantee">#E4FFCA</color>
+    <color name="background_arrive_pay">#CEEFFF</color>
+    <color name="trans_color">@color/tran</color>
+    <color name="orange">#8E8E8E</color>
+
+    <!-- 主界面颜色 -->
+    <!-- <color name="home_backround">#F7F1C0</color>
+    <color name="province_line_border">#C7C7C7</color> -->
+    
+    <!-- 二维码横扫颜色 -->
+    <color name="viewfinder_frame">@color/light_blue</color>
+    <color name="viewfinder_laser">@color/light_blue</color>
+    <color name="viewfinder_mask">#9047484B</color>
+    <color name="result_view_black">@color/black</color>
+    <color name="possible_result_points">@color/light_blue</color>
+</resources>

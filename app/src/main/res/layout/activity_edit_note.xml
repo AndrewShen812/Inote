@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/distance_5dp"
+    tools:context="com.lf.inote.EditNoteActivity" >
+
+    <EditText
+        android:id="@+id/et_note_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLength="28"
+        android:background="@drawable/button_round_corner_normal"
+        android:drawableBottom="@drawable/dash_line"
+        android:padding="@dimen/distance_5dp"
+        android:hint="@string/edit_note_title_hint"
+        android:textColor="@color/font_major_color" />
+    
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/button_round_corner_normal"
+        android:layout_marginTop="@dimen/distance_5dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <com.lf.view.NoteEditText
+                android:id="@+id/et_note_content"
+                android:layout_width="fill_parent"
+                android:layout_height="1000dp"
+                android:gravity="top"
+                android:lineSpacingExtra="@dimen/distance_5dp"
+                android:padding="@dimen/distance_5dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="\u6668\u5b87sy"
+                android:textColor="@color/font_major_color"
+                android:hint="@string/edit_note_content_hint" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
