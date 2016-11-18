@@ -8,8 +8,9 @@
 package com.lf.inote;
 
 import android.app.Application;
+import android.content.Context;
 
-import com.lf.model.User;
+import com.lf.inote.model.User;
 
 /**    
  *     
@@ -60,5 +61,9 @@ public class NoteApp extends Application{
      */
     public void setUser(User curUser) {
         this.user = curUser;
+    }
+
+    public static Context getAppContext() {
+        return mInstance;
     }
 }

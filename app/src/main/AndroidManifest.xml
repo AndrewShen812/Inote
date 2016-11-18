@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/MyTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,18 +28,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EditNoteActivity"
+            android:name=".ui.note.EditNoteActivity"
             android:label="@string/title_activity_edit_note" >
         </activity>
         <activity
-            android:name=".EditBillActivity" />
-        <activity
-            android:name=".TestActivity" >
-            <intent-filter>
-                <action android:name="com.lf.inote.action.StartTest" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:name=".ui.bill.EditBillActivity" />
     </application>
 
 </manifest>

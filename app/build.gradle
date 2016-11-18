@@ -19,9 +19,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/Baidu-OAuth-SDK-Android-G-2.0.0.jar')
     compile files('libs/Baidu-PCS-SDK-Android-L2-2.1.0.jar')
     compile files('libs/httpmime-4.2.jar')
     compile files('libs/Volley.jar')
+    compile 'com.android.support:support-v4:21.0.3'
 }

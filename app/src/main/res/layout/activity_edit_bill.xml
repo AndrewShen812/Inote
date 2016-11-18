@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/distance_5dp"
-    tools:context="com.lf.inote.EditBillActivity" >
+    tools:context=".ui.bill.EditBillActivity" >
 
     <LinearLayout
         android:id="@+id/ll_add_bill_date"
@@ -90,7 +90,7 @@
             android:orientation="vertical"
             android:background="@drawable/button_round_corner_normal" >
 
-            <com.lf.view.NoteEditText
+            <com.lf.inote.view.NoteEditText
                 android:id="@+id/et_bill_remark"
                 android:layout_width="fill_parent"
                 android:layout_height="1000dp"

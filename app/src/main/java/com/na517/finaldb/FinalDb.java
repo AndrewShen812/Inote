@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.lf.model.Note;
 import com.na517.finaldb.db.sqlite.CursorUtils;
 import com.na517.finaldb.db.sqlite.DbModel;
 import com.na517.finaldb.db.sqlite.ManyToOneLazyLoader;

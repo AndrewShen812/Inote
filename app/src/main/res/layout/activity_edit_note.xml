@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/distance_5dp"
-    tools:context="com.lf.inote.EditNoteActivity" >
+    tools:context=".ui.note.EditNoteActivity" >
 
     <EditText
         android:id="@+id/et_note_title"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <com.lf.view.NoteEditText
+            <com.lf.inote.view.NoteEditText
                 android:id="@+id/et_note_content"
                 android:layout_width="fill_parent"
                 android:layout_height="1000dp"

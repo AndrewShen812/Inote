@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_gray"
+    tools:context=".ui.note.NoteListFragment">
+
+    <RelativeLayout
+        android:id="@+id/rl_note_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_add_note"
+        android:layout_marginTop="@dimen/distance_5dp" >
+
+        <ListView
+            android:id="@+id/lv_note_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_round_corner_normal" />
+
+        <TextView
+            android:id="@+id/tv_main_no_note_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/text_no_note_tips" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_add_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/distance_5dp"
+        android:background="@drawable/selector_round_corner_button"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/distance_10dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_add_note"
+            android:gravity="center"
+            android:text="@string/text_add_note"
+            android:textColor="@color/font_major_color"
+            android:textSize="@dimen/font_size_16sp" />
+    </LinearLayout>
+
+</RelativeLayout>
