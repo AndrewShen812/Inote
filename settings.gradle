@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':bd_speech_lib'
