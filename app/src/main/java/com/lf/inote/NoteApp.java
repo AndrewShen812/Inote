@@ -10,6 +10,8 @@ package com.lf.inote;
 import android.app.Application;
 import android.content.Context;
 
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.lf.inote.model.User;
 
 /**    
@@ -39,6 +41,8 @@ public class NoteApp extends Application{
         
         mInstance = this;
         user = new User("", "");
+
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=584f7042");
     }
     
     public static NoteApp getInstance() {

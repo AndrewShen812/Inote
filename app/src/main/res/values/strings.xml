@@ -20,5 +20,7 @@
     <string name="text_bill_year">年</string>
     <string name="text_bill_income">收入</string>
     <string name="text_bill_expense">支出</string>
+    <string name="text_speech_input">语音输入</string>
+    <string name="text_def_note_title">未命名笔记</string>
 
 </resources>

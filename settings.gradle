@@ -1,1 +1,1 @@
-include ':app', ':bd_speech_lib'
+include ':app', ':bd_speech_lib', ':xunfei_speech_lib'

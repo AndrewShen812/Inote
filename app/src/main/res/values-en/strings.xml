@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">INote</string>
+    <string name="title_activity_edit_note">EditNoteActivity</string>
+    <string name="edit_note_title_hint">Title</string>
+    <string name="edit_note_content_hint">Content</string>
+    <string name="text_add_note">Add</string>
+    <string name="text_save">Save</string>
+    <string name="text_no_note_tips">No content</string>
+    <string name="text_login_tips">Login</string>
+    <string name="text_page_tips">Page</string>
+    <string name="text_note_count">%d notes in total</string>
+    <string name="text_bill_count">%d bills intotal</string>
+    <string name="text_type_note">Note</string>
+    <string name="text_type_tally">Bill</string>
+    <string name="text_bill_day">Day</string>
+    <string name="text_bill_week">Week</string>
+    <string name="text_bill_month">Month</string>
+    <string name="text_bill_year">Year</string>
+    <string name="text_bill_income">Income</string>
+    <string name="text_bill_expense">Expense</string>
+    <string name="text_speech_input">Speech input</string>
+    <string name="text_def_note_title">Untitled</string>
+
+</resources>

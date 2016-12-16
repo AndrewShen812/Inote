@@ -25,4 +25,5 @@ dependencies {
     compile files('libs/Volley.jar')
     compile 'com.android.support:support-v4:21.0.3'
     compile project(':bd_speech_lib')
+    compile project(':xunfei_speech_lib')
 }

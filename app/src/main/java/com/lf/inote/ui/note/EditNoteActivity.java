@@ -34,7 +34,7 @@ import java.util.Arrays;
 
 public class EditNoteActivity extends Activity implements RecognitionListener {
     
-    private static final String DEF_TITLE = "未命名笔记";
+    private String mDefTitle;
     
     private EditText mEtTitle;
     
@@ -70,6 +70,7 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
      * @date 2015-2-11
      */
     private void initView() {
+        mDefTitle = getString(R.string.text_def_note_title);
         mEtTitle = (EditText) findViewById(R.id.et_note_title);
         mEtNote = (NoteEditText) findViewById(R.id.et_note_content);
         ((ImageView) findViewById(R.id.iv_add_note_speech)).setColorFilter(getResources().getColor(R.color.light_blue));
@@ -129,7 +130,7 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
                 if (isNewNote && !StringUtils.isEmpty(content)) {
                     // 添加默认标题
                     mNote = new Note();
-                    mNote.setTitle(DEF_TITLE);
+                    mNote.setTitle(mDefTitle);
                     mNote.setContent(content);
                     mNote.setCreateTime(mCreateTime);
                     mNote.setModifyTime(TimeUtil.getCurrentDateTime(null));
@@ -137,7 +138,7 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
                     NoteDBImpl.getInstance(mContext).insert(mNote);
                 }
                 else if(!isNewNote && !StringUtils.isEmpty(content)){
-                    mNote.setTitle(DEF_TITLE);
+                    mNote.setTitle(mDefTitle);
                     mNote.setContent(content);
                     mNote.setModifyTime(TimeUtil.getCurrentDateTime(null));
                     mNote.setAuthor(NoteApp.getInstance().getUser().getUserName());

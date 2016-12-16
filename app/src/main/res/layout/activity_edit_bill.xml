@@ -85,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_add_bill_amount"
-            android:layout_above="@+id/ll_add_bill_save"
+            android:layout_above="@+id/ll_add_bill_btn_area"
             android:layout_marginTop="@dimen/distance_5dp"
             android:orientation="vertical"
             android:background="@drawable/button_round_corner_normal" >
@@ -102,27 +102,63 @@
                 android:hint="备注"
                 android:textColor="@color/font_major_color" />
         </LinearLayout>
-    
+
     <LinearLayout
-        android:id="@+id/ll_add_bill_save"
+        android:id="@+id/ll_add_bill_btn_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/distance_5dp"
-        android:layout_marginTop="@dimen/distance_5dp"
-        android:background="@drawable/selector_round_corner_button"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:padding="@dimen/distance_10dp" >
+        android:layout_marginTop="@dimen/distance_5dp"
+        android:layout_marginBottom="@dimen/distance_5dp"
+        android:layout_alignParentBottom="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_add_note"
+        <LinearLayout
+            android:id="@+id/ll_add_bill_speech"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_round_corner_button"
             android:gravity="center"
-            android:text="@string/text_save"
-            android:textColor="@color/font_major_color"
-            android:textSize="@dimen/font_size_16sp" />
+            android:orientation="horizontal"
+            android:onClick="onSpeechInput"
+            android:padding="@dimen/distance_10dp" >
+
+            <ImageView
+                android:id="@+id/iv_add_bill_speech"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/bd_asr_mic"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/distance_5dp"
+                android:gravity="center"
+                android:text="@string/text_speech_input"
+                android:textColor="@color/font_major_color"
+                android:textSize="@dimen/font_size_16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_add_bill_save"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/distance_5dp"
+            android:background="@drawable/selector_round_corner_button"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/distance_10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_add_note"
+                android:gravity="center"
+                android:text="@string/text_save"
+                android:textColor="@color/font_major_color"
+                android:textSize="@dimen/font_size_16sp" />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
