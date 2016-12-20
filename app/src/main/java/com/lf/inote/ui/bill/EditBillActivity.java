@@ -1,11 +1,10 @@
 package com.lf.inote.ui.bill;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -45,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class EditBillActivity extends Activity implements OnClickListener {
+public class EditBillActivity extends FragmentActivity implements OnClickListener {
 
 	/**
 	 * 账单类型-收入
@@ -160,13 +159,15 @@ public class EditBillActivity extends Activity implements OnClickListener {
 
 	private void selectDate() {
 		Calendar calendar = Calendar.getInstance();
-		DatePickerDialog date = new DatePickerDialog(mContext, new OnDateSetListener() {
+		DatePickerDialog date = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
 			@Override
 			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 				mTvDate.setText(String.format("%d-%02d-%02d", year, monthOfYear + 1, dayOfMonth));
 			}
 		}, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 		date.show();
+//		WheelDialog dl = new WheelDialog();
+//		dl.show(getSupportFragmentManager(), "date WheelDialog");
 	}
 
 	private void saveBill() {

@@ -25,10 +25,6 @@ import com.lf.inote.utils.StringUtils;
 import com.lf.inote.utils.TimeUtil;
 import com.lf.inote.view.NoteEditText;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -160,10 +156,12 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
     public void onSpeechInput(View view) {
         Intent intent = new Intent("com.baidu.action.RECOGNIZE_SPEECH");
         bindParams(intent);
-        startActivityForResult(intent, REQUEST_UI);
+//        startActivityForResult(intent, REQUEST_UI);
+        mSpeechRecognizer.startListening(intent);
     }
 
     public void bindParams(Intent intent) {
+        intent.putExtra("args", "");
         intent.putExtra(Constant.EXTRA_SOUND_START, R.raw.bdspeech_recognition_start);
         intent.putExtra(Constant.EXTRA_SOUND_END, R.raw.bdspeech_speech_end);
         intent.putExtra(Constant.EXTRA_SOUND_SUCCESS, R.raw.bdspeech_recognition_success);
@@ -173,29 +171,6 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
         intent.putExtra(Constant.EXTRA_INFILE, "");
         intent.putExtra(Constant.EXTRA_LANGUAGE, "cmn-Hans-CN");
         intent.putExtra(Constant.EXTRA_NLU, "enable");
-
-        intent.putExtra(Constant.EXTRA_OFFLINE_ASR_BASE_FILE_PATH, "/sdcard/easr/s_1");
-        intent.putExtra(Constant.EXTRA_LICENSE_FILE_PATH, "/sdcard/easr/license-tmp-20150530.txt");
-        intent.putExtra(Constant.EXTRA_OFFLINE_SLOT_DATA, buildTestSlotData());
-    }
-
-    private String buildTestSlotData() {
-        JSONObject slotData = new JSONObject();
-        JSONArray name = new JSONArray().put("李涌泉").put("郭下纶");
-        JSONArray song = new JSONArray().put("七里香").put("发如雪");
-        JSONArray artist = new JSONArray().put("周杰伦").put("李世龙");
-        JSONArray app = new JSONArray().put("手机百度").put("百度地图");
-        JSONArray usercommand = new JSONArray().put("关灯").put("开门");
-        try {
-            slotData.put(Constant.EXTRA_OFFLINE_SLOT_NAME, name);
-            slotData.put(Constant.EXTRA_OFFLINE_SLOT_SONG, song);
-            slotData.put(Constant.EXTRA_OFFLINE_SLOT_ARTIST, artist);
-            slotData.put(Constant.EXTRA_OFFLINE_SLOT_APP, app);
-            slotData.put(Constant.EXTRA_OFFLINE_SLOT_USERCOMMAND, usercommand);
-        } catch (JSONException e) {
-
-        }
-        return slotData.toString();
     }
 
     @Override
