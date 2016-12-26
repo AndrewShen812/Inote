@@ -28,4 +28,5 @@ dependencies {
     compile project(':bd_speech_lib')
     compile project(':xunfei_speech_lib')
     compile 'com.wx.wheelview:wheelview:1.3.3'
+    compile 'com.android.support:recyclerview-v7:24.1.0'
 }

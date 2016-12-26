@@ -22,5 +22,7 @@
     <string name="text_bill_expense">支出</string>
     <string name="text_speech_input">语音输入</string>
     <string name="text_def_note_title">未命名笔记</string>
+    <string name="text_widget_robot_tip">我是大师兄，跟我聊天吧。</string>
+    <string name="text_widget_user_tip">点击小麦克风，开始聊天。</string>
 
 </resources>

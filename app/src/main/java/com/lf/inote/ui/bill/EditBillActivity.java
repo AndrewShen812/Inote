@@ -24,8 +24,10 @@ import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SpeechUnderstander;
 import com.iflytek.cloud.SpeechUnderstanderListener;
+import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.UnderstanderResult;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
@@ -198,6 +200,8 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 		}
 		setResult(RESULT_OK);
 		finish();
+
+//		speechSynthesize();
 	}
 
 	/**
@@ -214,19 +218,98 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 		return true;
 	}
 
-	private Toast mToast;
+	private Toast mToast = null;
 	private List<String> mResultList = new ArrayList<>();
 
 	private void showTip(final String str) {
+		if (mToast == null) {
+			mToast = Toast.makeText(EditBillActivity.this, "", Toast.LENGTH_SHORT);
+		}
 		mToast.setText(str);
 		mToast.show();
 	}
 
-	private void speechInput() {
-		mToast = Toast.makeText(EditBillActivity.this, "", Toast.LENGTH_SHORT);
+	private long mSynthesizeStart = 0;
+	private long total = 0;
+	private int tryTimes;
+	private void speechSynthesize() {
+		//1.创建SpeechSynthesizer对象, 第二个参数：本地合成时传InitListener
+		SpeechSynthesizer mTts= SpeechSynthesizer.createSynthesizer(EditBillActivity.this, null);
+		// 清空参数
+		mTts.setParameter(SpeechConstant.PARAMS, null);
+		//2.合成参数设置，详见《科大讯飞MSC API手册(Android)》SpeechSynthesizer 类
+		mTts.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");//设置发音人
+		mTts.setParameter(SpeechConstant.SPEED, "50");//设置语速
+		mTts.setParameter(SpeechConstant.VOLUME, "80");//设置音量，范围0~100
+		mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD); //设置云端
+		/**
+		 * 设置播放器音频流类型
+		 * 0-通话
+		 * 1-系统
+		 * 2-铃声
+		 * 3-音乐
+		 * 4-闹铃
+		 * 5-通知
+		 */
+		mTts.setParameter(SpeechConstant.STREAM_TYPE, "3");
+		// 设置播放合成音频打断音乐播放，默认为true
+		mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
+		// 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
+		// 注：AUDIO_FORMAT参数语记需要更新版本才能生效
+//		mTts.setParameter(SpeechConstant.AUDIO_FORMAT, "pcm");
+//		mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory()+"/iNote/tts.pcm");
+		//3.开始合成
+		String source = "科大讯飞作为中国最大的智能语音技术提供商，在智能语音技术领域有着长期的研究积累，并在中文" +
+				"语音合成、语音识别、口语评测等多项技术上拥有国际领先的成果。科大讯飞是我国唯一以语音技术为产业化" +
+				"方向的“国家863计划成果产业化基地”…";
+		String source2 = "科大讯飞，让世界聆听我们的声音。";
+		mTts.startSpeaking(source2, mSynListener);
+		mSynthesizeStart = System.currentTimeMillis();
+	}
+
+	//合成监听器
+	private SynthesizerListener mSynListener = new SynthesizerListener(){
+		//会话结束回调接口，没有错误时，error为null
+		public void onCompleted(SpeechError error) {
+			String err = error == null ? "" : "，error:" + error.getPlainDescription(true);
+			showTip("会话结束" + err);
+		}
+		//缓冲进度回调
+		//percent为缓冲进度0~100，beginPos为缓冲音频在文本中开始位置，endPos表示缓冲音频在文本中结束位置，info为附加信息。
+		public void onBufferProgress(int percent, int beginPos, int endPos, String info) {
+			showTip("缓冲进度：" + percent + "%");
+		}
+		//开始播放
+		public void onSpeakBegin() {
+			long cost = System.currentTimeMillis() - mSynthesizeStart;
+			Log.d("--debug", "Synthesize cost:" + cost);
+			tryTimes++;
+			total += cost;
+			Log.d("--debug", "合成" + tryTimes + "次平均耗时：" + (total * 1f / tryTimes));
+			showTip("开始播放");
+		}
+		//暂停播放
+		public void onSpeakPaused() {
+			showTip("暂停播放");
+		}
+		//播放进度回调
+		//percent为播放进度0~100,beginPos为播放音频在文本中开始位置，endPos表示播放音频在文本中结束位置.
+		public void onSpeakProgress(int percent, int beginPos, int endPos) {
+			showTip("播放进度:" + percent + "%");
+		}
+		//恢复播放回调接口
+		public void onSpeakResumed() {
+			showTip("恢复播放");
+		}
+		//会话事件回调接口
+		public void onEvent(int arg0, int arg1, int arg2, Bundle arg3) {}
+	};
+
+		private void speechInput() {
 		mResultList.clear();
-		showDialog();
-//		understander();
+//		showDialog();
+//		noDialog();
+		understander();
 	}
 
 	private void noDialog() {
@@ -270,13 +353,13 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 
 		@Override
 		public void onResult(UnderstanderResult understanderResult) {
-			Log.d("Result:", understanderResult.getResultString());
+			Log.d("Result", understanderResult.getResultString());
 		}
 
 		@Override
 		public void onError(SpeechError speechError) {
 			showTip(speechError.getPlainDescription(true));
-			Log.e("error:", speechError.getPlainDescription(true));
+			Log.e("error", speechError.getPlainDescription(true));
 		}
 
 		@Override

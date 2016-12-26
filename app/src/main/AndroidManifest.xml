@@ -60,6 +60,16 @@
         </activity>
         <activity
             android:name=".ui.bill.EditBillActivity" />
+
+        <!-- 桌面小插件配置 -->
+        <receiver android:name=".ui.appwidget.SpeechWidgetProvider">
+            <meta-data android:name="android.appwidget.provider"
+                       android:resource="@xml/appwidget_speech_provider" />
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.lf.inote.APPWIDGET_SPEECH" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

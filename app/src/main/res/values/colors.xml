@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="main_color">@color/light_blue</color>
+    <color name="main_color_light">#8001CAD4</color>
     <!-- 基础颜色定义 -->
     <!-- 白色 -->
     <color name="white">#FFFFFF</color>
