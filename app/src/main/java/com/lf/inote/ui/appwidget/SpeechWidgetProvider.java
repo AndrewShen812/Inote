@@ -33,6 +33,9 @@ import com.iflytek.speech.util.JsonParser;
 import com.lf.inote.NoteApp;
 import com.lf.inote.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -69,10 +72,25 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
             super.handleMessage(msg);
             mResetHandler.removeMessages(MSG_RESET_TIPS);
             mWidgetManager = AppWidgetManager.getInstance(NoteApp.getAppContext());
-            updateRobotText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_robot_tip));
-            updateUserText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
+//            updateRobotText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_robot_tip));
+//            updateUserText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
+            updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_robot_tip),
+                    NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
         }
     };
+
+    private void updateTalkMsg(String robotMsg, String userMsg) {
+        Intent intent = new Intent(SpeechWidgetService.ACTION_MSG_UPDATE);
+        if (!TextUtils.isEmpty(robotMsg)) {
+            intent.putExtra("robotMsg", robotMsg);
+        }
+        if (!TextUtils.isEmpty(userMsg)) {
+            intent.putExtra("userMsg", userMsg);
+        }
+
+        NoteApp.getAppContext().sendBroadcast(intent);
+        mWidgetManager.notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.lv_app_widget_msg_list);
+    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -92,13 +110,18 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         if (mWidgetView == null) {
             mWidgetView = new RemoteViews(context.getPackageName(), R.layout.layout_app_widget);
         }
+
         Intent speechIntent = new Intent(context, SpeechWidgetProvider.class);
         speechIntent.setAction(ACTION_SPEECH);
         speechIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         PendingIntent btPendingIntent = PendingIntent.getBroadcast(context, 0, speechIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mWidgetView.setOnClickPendingIntent(R.id.iv_app_widget_speech, btPendingIntent);
-        updateRobotText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_robot_tip));
-        updateUserText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
+
+        Intent serviceIntent = new Intent(context, SpeechWidgetService.class);
+        mWidgetView.setRemoteAdapter(R.id.lv_app_widget_msg_list, serviceIntent);
+
+        updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_robot_tip),
+                NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
 
         appWidgetManager.updateAppWidget(mAppWidgetId, mWidgetView);
     }
@@ -156,12 +179,14 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
     public void onEnabled(Context context) {
         Log.d(TAG, "onEnabled");
         mWidgetIdSet.clear();
+        context.startService(new Intent(context, SpeechWidgetService.class));
     }
 
     @Override
     public void onDisabled(Context context) {
         Log.d(TAG, "onDisabled");
         mWidgetIdSet.clear();
+        context.stopService(new Intent(context, SpeechWidgetService.class));
     }
 
     /********************************* 语音识别相关 *********************************/
@@ -180,11 +205,13 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
     private long mSynthesizeStart = 0;
     private long total = 0;
     private int tryTimes;
+    private String mLastSource;
 
     private void speechSynthesize(Context context, String source) {
         if (TextUtils.isEmpty(source)) {
             return;
         }
+        mLastSource = source;
         //1.创建SpeechSynthesizer对象, 第二个参数：本地合成时传InitListener
         mSpeechSynthesizer = SpeechSynthesizer.createSynthesizer(context, null);
         // 清空参数
@@ -221,6 +248,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         public void onCompleted(SpeechError error) {
             String err = error == null ? "" : "，error:" + error.getPlainDescription(true);
             showTip("会话结束" + err);
+            mResetHandler.removeMessages(MSG_RESET_TIPS);
             mResetHandler.sendEmptyMessageDelayed(MSG_RESET_TIPS, 10000);
         }
 
@@ -232,6 +260,8 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
 
         //开始播放
         public void onSpeakBegin() {
+//            updateRobotText(mWidgetManager, mLastSource);
+            updateTalkMsg(mLastSource, null);
             long cost = System.currentTimeMillis() - mSynthesizeStart;
             Log.d("--debug", "Synthesize cost:" + cost);
             tryTimes++;
@@ -264,8 +294,8 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
     /************ 语音识别 ************/
     private void speechInput(Context context) {
         mResultList.clear();
-        noDialog(context);
-//		understander(context);
+//        noDialog(context);
+		understander(context);
     }
 
     private void noDialog(Context context) {
@@ -288,8 +318,12 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         understander.setParameter(SpeechConstant.RESULT_TYPE, "json");
         //3.开始语义理解
         understander.startUnderstanding(mUnderstanderListener);
-        // XmlParser为结果解析类，见SpeechDemo
     }
+
+    private static final String KEY_RC = "rc";
+    private static final String KEY_TEXT = "text";
+    private static final String KEY_ANSWER = "answer";
+    private static final int RC_SUCCESS = 0;
 
     private SpeechUnderstanderListener mUnderstanderListener = new SpeechUnderstanderListener() {
         @Override
@@ -309,11 +343,38 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
 
         @Override
         public void onResult(UnderstanderResult understanderResult) {
-            Log.d("Result:", understanderResult.getResultString());
+            Log.d("Result", understanderResult.getResultString());
+            JSONObject resultJson = null;
+            try {
+                resultJson = new JSONObject(understanderResult.getResultString());
+                String text = resultJson.getString(KEY_TEXT);
+                if (!TextUtils.isEmpty(text)) {
+                    updateUserText(mWidgetManager, text);
+                }
+                String robotText = null;
+                if (resultJson.has(KEY_RC) && RC_SUCCESS == resultJson.getInt(KEY_RC)
+                        && resultJson.has(KEY_ANSWER)) {
+                    JSONObject answer = resultJson.getJSONObject(KEY_ANSWER);
+                    robotText = answer.getString(KEY_TEXT);
+                }
+                if (robotText == null) {
+                    String format = NoteApp.getAppContext().getString(R.string.text_widget_not_understand);
+                    robotText = String.format(format, text);
+                }
+                updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_understanding), text);
+                speechSynthesize(NoteApp.getAppContext(), robotText);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onError(SpeechError speechError) {
+            String errMsg = speechError.getErrorDescription();
+            if (!TextUtils.isEmpty(errMsg)) {
+                updateTalkMsg(errMsg, null);
+                speechSynthesize(NoteApp.getAppContext(), errMsg);
+            }
             showTip(speechError.getPlainDescription(true));
             Log.e("error:", speechError.getPlainDescription(true));
         }

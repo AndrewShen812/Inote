@@ -24,5 +24,7 @@
     <string name="text_def_note_title">未命名笔记</string>
     <string name="text_widget_robot_tip">我是大师兄，跟我聊天吧。</string>
     <string name="text_widget_user_tip">点击小麦克风，开始聊天。</string>
+    <string name="text_widget_understanding">让我想想……</string>
+    <string name="text_widget_not_understand">关于%1$s，我还没想好怎么回答。</string>
 
 </resources>
