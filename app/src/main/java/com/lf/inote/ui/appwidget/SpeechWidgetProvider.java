@@ -8,6 +8,7 @@ package com.lf.inote.ui.appwidget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,8 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -56,10 +55,8 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
 
     public static final int MSG_RESET_TIPS = 1;
 
-    private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private RemoteViews mWidgetView;
-    private AppWidgetManager mWidgetManager;
-    private HashSet<Integer> mWidgetIdSet = new HashSet<>();
+    private Context mContext;
 
     /** 语音合成器 */
     private SpeechSynthesizer mSpeechSynthesizer;
@@ -71,9 +68,6 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             mResetHandler.removeMessages(MSG_RESET_TIPS);
-            mWidgetManager = AppWidgetManager.getInstance(NoteApp.getAppContext());
-//            updateRobotText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_robot_tip));
-//            updateUserText(mWidgetManager, NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
             updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_robot_tip),
                     NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
         }
@@ -81,6 +75,8 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
 
     private void updateTalkMsg(String robotMsg, String userMsg) {
         Intent intent = new Intent(SpeechWidgetService.ACTION_MSG_UPDATE);
+        Log.d(TAG, "updateTalkMsg robotMsg=" + robotMsg);
+        Log.d(TAG, "updateTalkMsg userMsg=" + userMsg);
         if (!TextUtils.isEmpty(robotMsg)) {
             intent.putExtra("robotMsg", robotMsg);
         }
@@ -89,7 +85,12 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         }
 
         NoteApp.getAppContext().sendBroadcast(intent);
-        mWidgetManager.notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.lv_app_widget_msg_list);
+        AppWidgetManager mWidgetManager = AppWidgetManager.getInstance(mContext);
+        int[] ids = mWidgetManager.getAppWidgetIds(new ComponentName(mContext, SpeechWidgetProvider.class));
+        for (Integer id : ids) {
+            Log.d(TAG, "updateTalkMsg AppWidgetId=" + id);
+            mWidgetManager.notifyAppWidgetViewDataChanged(id, R.id.lv_app_widget_msg_list);
+        }
     }
 
     @Override
@@ -98,15 +99,12 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         // 如果在xml中配置用同一个AppWidgetProvider管理多个Widget, appWidgetIds则表示这多个widget的id
         for (int i = 0; i < appWidgetIds.length; i++) {
             int appWidgetId = appWidgetIds[i];
-            mWidgetIdSet.add(appWidgetId);
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
 
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Log.d(TAG, "updateAppWidget appWidgetId=" + appWidgetId);
-        mAppWidgetId = appWidgetId;
-        mWidgetManager = appWidgetManager;
         if (mWidgetView == null) {
             mWidgetView = new RemoteViews(context.getPackageName(), R.layout.layout_app_widget);
         }
@@ -120,35 +118,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         Intent serviceIntent = new Intent(context, SpeechWidgetService.class);
         mWidgetView.setRemoteAdapter(R.id.lv_app_widget_msg_list, serviceIntent);
 
-        updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_robot_tip),
-                NoteApp.getAppContext().getString(R.string.text_widget_user_tip));
-
-        appWidgetManager.updateAppWidget(mAppWidgetId, mWidgetView);
-    }
-
-    private void updateRobotText(AppWidgetManager appWidgetManager, String text) {
-        Log.d(TAG, "into updateRobotText");
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID || mWidgetManager == null) {
-            return;
-        }
-        if (mWidgetView == null) {
-            mWidgetView = new RemoteViews(NoteApp.getAppContext().getPackageName(), R.layout.layout_app_widget);
-        }
-        Log.d(TAG, "into updateRobotText, mAppWidgetId:" + mAppWidgetId);
-        mWidgetView.setTextViewText(R.id.tv_app_widget_robot, text);
-        appWidgetManager.updateAppWidget(mAppWidgetId, mWidgetView);
-    }
-
-    private void updateUserText(AppWidgetManager appWidgetManager, String text) {
-        Log.d(TAG, "into updateUserText");
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID || mWidgetManager == null) {
-            return;
-        }
-        if (mWidgetView == null) {
-            mWidgetView = new RemoteViews(NoteApp.getAppContext().getPackageName(), R.layout.layout_app_widget);
-        }
-        mWidgetView.setTextViewText(R.id.tv_app_widget_user, text);
-        appWidgetManager.updateAppWidget(mAppWidgetId, mWidgetView);
+        appWidgetManager.updateAppWidget(appWidgetId, mWidgetView);
     }
 
     @Override
@@ -156,11 +126,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
         String action = intent.getAction();
 
-        mWidgetManager = AppWidgetManager.getInstance(NoteApp.getAppContext());
-        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID);
-        Log.d(TAG, "SpeechWidgetProvider onReceive : "+intent.getAction());
-        Log.d(TAG, "SpeechWidgetProvider mAppWidgetId : "+mAppWidgetId);
+        mContext = context;
         if (action.equals(ACTION_SPEECH)) {
             mResetHandler.removeMessages(MSG_RESET_TIPS);
             speechInput(NoteApp.getAppContext());
@@ -170,22 +136,17 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
         Log.d(TAG, "onDeleted");
-        ArrayList idList = new ArrayList<>();
-        Collections.addAll(idList, appWidgetIds);
-        mWidgetIdSet.removeAll(idList);
     }
 
     @Override
     public void onEnabled(Context context) {
         Log.d(TAG, "onEnabled");
-        mWidgetIdSet.clear();
         context.startService(new Intent(context, SpeechWidgetService.class));
     }
 
     @Override
     public void onDisabled(Context context) {
         Log.d(TAG, "onDisabled");
-        mWidgetIdSet.clear();
         context.stopService(new Intent(context, SpeechWidgetService.class));
     }
 
@@ -211,7 +172,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         if (TextUtils.isEmpty(source)) {
             return;
         }
-        mLastSource = source;
+        mLastSource = new String(source);
         //1.创建SpeechSynthesizer对象, 第二个参数：本地合成时传InitListener
         mSpeechSynthesizer = SpeechSynthesizer.createSynthesizer(context, null);
         // 清空参数
@@ -261,7 +222,8 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         //开始播放
         public void onSpeakBegin() {
 //            updateRobotText(mWidgetManager, mLastSource);
-            updateTalkMsg(mLastSource, null);
+//            Log.d(TAG, "onSpeakBegin mLastSource: " + mLastSource);
+//            updateTalkMsg(mLastSource, null);
             long cost = System.currentTimeMillis() - mSynthesizeStart;
             Log.d("--debug", "Synthesize cost:" + cost);
             tryTimes++;
@@ -348,9 +310,6 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
             try {
                 resultJson = new JSONObject(understanderResult.getResultString());
                 String text = resultJson.getString(KEY_TEXT);
-                if (!TextUtils.isEmpty(text)) {
-                    updateUserText(mWidgetManager, text);
-                }
                 String robotText = null;
                 if (resultJson.has(KEY_RC) && RC_SUCCESS == resultJson.getInt(KEY_RC)
                         && resultJson.has(KEY_ANSWER)) {
@@ -361,7 +320,8 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
                     String format = NoteApp.getAppContext().getString(R.string.text_widget_not_understand);
                     robotText = String.format(format, text);
                 }
-                updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_understanding), text);
+//                updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_understanding), text);
+                updateTalkMsg(robotText, text);
                 speechSynthesize(NoteApp.getAppContext(), robotText);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -372,6 +332,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         public void onError(SpeechError speechError) {
             String errMsg = speechError.getErrorDescription();
             if (!TextUtils.isEmpty(errMsg)) {
+//                updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_understanding), null);
                 updateTalkMsg(errMsg, null);
                 speechSynthesize(NoteApp.getAppContext(), errMsg);
             }
@@ -438,7 +399,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         public void onError(SpeechError error) {
             String errMsg = error.getErrorDescription();
             if (!TextUtils.isEmpty(errMsg)) {
-                updateRobotText(mWidgetManager, errMsg);
+                updateTalkMsg(errMsg, null);
                 speechSynthesize(NoteApp.getAppContext(), errMsg);
             }
             showTip(error.getPlainDescription(true));
@@ -477,8 +438,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         String finalText = sb.toString();
         if (!TextUtils.isEmpty(finalText)) {
             String showText = "我听到了，你说的是“" + finalText + "”吗？";
-            updateRobotText(mWidgetManager, showText);
-            updateUserText(mWidgetManager, finalText);
+            updateTalkMsg(showText, finalText);
             speechSynthesize(NoteApp.getAppContext(), showText);
         }
     }

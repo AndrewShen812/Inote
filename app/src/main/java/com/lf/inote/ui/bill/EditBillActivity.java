@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.GrammarListener;
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
@@ -38,9 +40,6 @@ import com.lf.inote.model.Bill;
 import com.lf.inote.ui.MainActivity;
 import com.lf.inote.utils.TimeUtil;
 import com.lf.inote.view.NoteEditText;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -305,20 +304,11 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 		public void onEvent(int arg0, int arg1, int arg2, Bundle arg3) {}
 	};
 
-		private void speechInput() {
+	private void speechInput() {
 		mResultList.clear();
 //		showDialog();
-//		noDialog();
-		understander();
-	}
-
-	private void noDialog() {
-		//1.创建SpeechRecognizer对象，第二个参数：本地听写时传InitListener
-		SpeechRecognizer mIat = SpeechRecognizer.createRecognizer(EditBillActivity.this, null);
-		//2.设置听写参数，详见《科大讯飞MSC API手册(Android)》SpeechConstant类
-		setParam(mIat);
-		//3.开始听写
-		mIat.startListening(mRecoListener);
+		noDialog();
+//		understander();
 	}
 
 	private void understander() {
@@ -422,6 +412,69 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 		mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/iat.wav");
 	}
 
+	private SpeechRecognizer mIat = null;
+	private void noDialog() {
+		//1.创建SpeechRecognizer对象，第二个参数：本地听写时传InitListener
+		if (mIat == null) {
+			mIat = SpeechRecognizer.createRecognizer(EditBillActivity.this, null);
+		}
+		//2.设置听写参数，详见《科大讯飞MSC API手册(Android)》SpeechConstant类
+//		setParam(mIat);
+		//3.开始听写
+//		mIat.startListening(mRecoListener);
+		buildGrammar(mIat);
+	}
+
+	private static final String GRAMMAR_TYPE_ABNF = "abnf";
+	private static final String TAG = "EditBillActivity";
+	private static String mGrammarId = null;
+	private void buildGrammar(final SpeechRecognizer mIat) {
+		Log.d(TAG, "buildGrammar mGrammarId: " + mGrammarId);
+		if (mGrammarId != null) {
+			listeningGrammar(mIat, mGrammarId);
+			return;
+		}
+		StringBuffer gbuffer = new StringBuffer();
+		gbuffer.append("#ABNF 1.0 UTF-8;\n");
+		gbuffer.append("language zh-CN;\n");
+		gbuffer.append("mode voice;\n");
+		gbuffer.append("root $main;\n");
+		gbuffer.append("$main = [我] [$want] $查询 $费用;\n");
+		gbuffer.append("$want = 想 | 要;\n");
+		gbuffer.append("$查询 = 查 | 查询;\n");
+		gbuffer.append("$费用 = 手机费 | 话费;");
+		String grammar = gbuffer.toString();
+//		grammar = FucUtil.readFile(this, "check_fee.abnf", "utf-8");
+		Log.d(TAG, "buildGrammar grammar: \n" + grammar);
+		mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
+		mIat.setParameter(SpeechConstant.TEXT_ENCODING,"utf-8");
+		int ret = mIat.buildGrammar(GRAMMAR_TYPE_ABNF, grammar, new GrammarListener() {
+			@Override
+			public void onBuildFinish(String grammarId, SpeechError error) {
+				Log.d(TAG, "buildGrammar onBuildFinish: " + grammarId);
+				if(error == null){
+					mGrammarId = new String(grammarId);
+					showTip("onBuildFinish 语法构建成功：" + grammarId);
+					listeningGrammar(mIat, mGrammarId);
+				}else{
+					Log.d(TAG, "buildGrammar onBuildFinish error: " + error.getPlainDescription(true));
+					showTip("onBuildFinish 语法构建失败,错误码：" + error.getErrorCode());
+				}
+			}
+		});
+		Log.d(TAG, "buildGrammar ret: " + ret);
+		if(ret != ErrorCode.SUCCESS) {
+			showTip("语法构建失败,错误码：" + ret);
+		}
+	}
+
+	private void listeningGrammar(SpeechRecognizer mIat, String grammarId) {
+		mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
+		mIat.setParameter(SpeechConstant.RESULT_TYPE, "json");
+		mIat.setParameter(SpeechConstant.CLOUD_GRAMMAR, grammarId);
+		mIat.startListening(mRecoListener);
+	}
+
 	public void setParam(SpeechRecognizer mIat) {
 		// 清空参数
 		mIat.setParameter(SpeechConstant.PARAMS, null);
@@ -456,8 +509,8 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 		mIat.setParameter(SpeechConstant.ASR_PTT, "0");
 		// 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
 		// 注：AUDIO_FORMAT参数语记需要更新版本才能生效
-		mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-		mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/iat.wav");
+//		mIat.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+//		mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/iat.wav");
 	}
 
 	//听写监听器
@@ -467,7 +520,7 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 		//关于解析Json的代码可参见MscDemo中JsonParser类；
 		//isLast等于true时会话结束。
 		public void onResult(RecognizerResult results, boolean isLast) {
-			Log.d("Result:", results.getResultString());
+			Log.d("Result", results.getResultString());
 			printResult(results);
 		}
 
@@ -512,14 +565,6 @@ public class EditBillActivity extends FragmentActivity implements OnClickListene
 	private void printResult(RecognizerResult results) {
 		String text = JsonParser.parseIatResult(results.getResultString());
 		mResultList.add(text);
-		String sn = null;
-		// 读取json结果中的sn字段
-		try {
-			JSONObject resultJson = new JSONObject(results.getResultString());
-			sn = resultJson.optString("sn");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
 
 		StringBuffer sb = new StringBuffer();
 		for (String r : mResultList) {
