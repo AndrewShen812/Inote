@@ -3,7 +3,7 @@
  * Create time：2016/12/23 10:04
  * Copyright: 2016 GALAXYWIND Network Systems Co.,Ltd.All rights reserved.
  */
-package com.lf.inote.ui.appwidget;
+package com.gwcd.xunfeirobot.appwidget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -18,6 +18,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.gwcd.xunfeirobot.R;
+import com.gwcd.xunfeirobot.RobotApp;
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
@@ -29,8 +31,6 @@ import com.iflytek.cloud.SpeechUnderstanderListener;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.UnderstanderResult;
 import com.iflytek.speech.util.JsonParser;
-import com.lf.inote.NoteApp;
-import com.lf.inote.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +70,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
             intent.putExtra("userMsg", userMsg);
         }
 
-        NoteApp.getAppContext().sendBroadcast(intent);
+        RobotApp.getAppContext().sendBroadcast(intent);
         AppWidgetManager mWidgetManager = AppWidgetManager.getInstance(mContext);
         int[] ids = mWidgetManager.getAppWidgetIds(new ComponentName(mContext, SpeechWidgetProvider.class));
         for (Integer id : ids) {
@@ -116,7 +116,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         startService(context);
         mContext = context;
         if (action.equals(ACTION_SPEECH)) {
-            speechInput(NoteApp.getAppContext());
+            speechInput(RobotApp.getAppContext());
         }
     }
 
@@ -152,7 +152,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
 
     private void showTip(final String str) {
         if (mToast == null) {
-            mToast = Toast.makeText(NoteApp.getAppContext(), "", Toast.LENGTH_SHORT);
+            mToast = Toast.makeText(RobotApp.getAppContext(), "", Toast.LENGTH_SHORT);
         }
         mToast.setText(str);
         mToast.show();
@@ -312,12 +312,12 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
                     robotText = answer.getString(KEY_TEXT);
                 }
                 if (robotText == null) {
-                    String format = NoteApp.getAppContext().getString(R.string.text_widget_not_understand);
+                    String format = RobotApp.getAppContext().getString(R.string.text_widget_not_understand);
                     robotText = String.format(format, text);
                 }
-                updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_understanding), text);
+                updateTalkMsg(RobotApp.getAppContext().getString(R.string.text_widget_understanding), text);
 //                updateTalkMsg(robotText, text);
-                speechSynthesize(NoteApp.getAppContext(), robotText);
+                speechSynthesize(RobotApp.getAppContext(), robotText);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -327,9 +327,9 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         public void onError(SpeechError speechError) {
             String errMsg = speechError.getErrorDescription();
             if (!TextUtils.isEmpty(errMsg)) {
-                updateTalkMsg(NoteApp.getAppContext().getString(R.string.text_widget_understanding), null);
+                updateTalkMsg(RobotApp.getAppContext().getString(R.string.text_widget_understanding), null);
 //                updateTalkMsg(errMsg, null);
-                speechSynthesize(NoteApp.getAppContext(), errMsg);
+                speechSynthesize(RobotApp.getAppContext(), errMsg);
             }
             showTip(speechError.getPlainDescription(true));
             Log.e("error:", speechError.getPlainDescription(true));
@@ -395,7 +395,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
             String errMsg = error.getErrorDescription();
             if (!TextUtils.isEmpty(errMsg)) {
                 updateTalkMsg(errMsg, null);
-                speechSynthesize(NoteApp.getAppContext(), errMsg);
+                speechSynthesize(RobotApp.getAppContext(), errMsg);
             }
             showTip(error.getPlainDescription(true));
         }
@@ -434,7 +434,7 @@ public class SpeechWidgetProvider extends AppWidgetProvider {
         if (!TextUtils.isEmpty(finalText)) {
             String showText = "我听到了，你说的是“" + finalText + "”吗？";
             updateTalkMsg(showText, finalText);
-            speechSynthesize(NoteApp.getAppContext(), showText);
+            speechSynthesize(RobotApp.getAppContext(), showText);
         }
     }
 }

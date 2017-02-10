@@ -1,90 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.lf.inote"
-    android:versionCode="1"
-    android:versionName="1.0" >
+          package="com.lf.inote"
+          android:versionCode="1"
+          android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="14" />
+        android:targetSdkVersion="14"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-
-    <!--允许程序改变网络连接状态 -->
+    <!-- 允许程序改变网络连接状态 -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".NoteApp"
         android:allowBackup="true"
         android:icon="@drawable/yd_cloud"
         android:label="@string/app_name"
-        android:theme="@style/MyTheme" >
+        android:theme="@style/MyTheme">
 
-        <!-- begin: baidu speech sdk-->
-        <meta-data android:name="com.baidu.speech.APP_ID" android:value="5386651"/>
-        <meta-data android:name="com.baidu.speech.API_KEY" android:value="zcYldRGuGNjslB0aHF2s6OI9"/>
-        <meta-data android:name="com.baidu.speech.SECRET_KEY" android:value="G3tN80beCGvYtKwvo2nvufBGiHGo65Ce"/>
-        <service android:name="com.baidu.speech.VoiceRecognitionService" android:exported="false" ></service>
+        <!-- begin: baidu speech sdk -->
+        <meta-data
+            android:name="com.baidu.speech.APP_ID"
+            android:value="5386651"/>
+        <meta-data
+            android:name="com.baidu.speech.API_KEY"
+            android:value="zcYldRGuGNjslB0aHF2s6OI9"/>
+        <meta-data
+            android:name="com.baidu.speech.SECRET_KEY"
+            android:value="G3tN80beCGvYtKwvo2nvufBGiHGo65Ce"/>
+
+        <service
+            android:name="com.baidu.speech.VoiceRecognitionService"
+            android:exported="false"/>
+
         <activity
             android:name="com.baidu.voicerecognition.android.ui.BaiduASRDigitalDialog"
             android:configChanges="orientation|keyboardHidden|screenLayout"
-            android:theme="@android:style/Theme.Dialog"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog">
             <intent-filter>
-                <action android:name="com.baidu.action.RECOGNIZE_SPEECH" ></action>
-                <category android:name="android.intent.category.DEFAULT" ></category>
+                <action android:name="com.baidu.action.RECOGNIZE_SPEECH"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <!-- end : baidu speech sdk-->
+        <!-- end : baidu speech sdk -->
 
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.note.EditNoteActivity"
-            android:label="@string/title_activity_edit_note" >
+            android:label="@string/title_activity_edit_note">
         </activity>
-        <activity
-            android:name=".ui.bill.EditBillActivity" />
+        <activity android:name=".ui.bill.EditBillActivity"/>
 
         <!-- 桌面小插件配置 -->
         <receiver android:name=".ui.appwidget.SpeechWidgetProvider">
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/appwidget_speech_provider" />
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_speech_provider"/>
+
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.lf.inote.APPWIDGET_SPEECH" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.lf.inote.APPWIDGET_SPEECH"/>
             </intent-filter>
         </receiver>
-        <service android:name=".ui.appwidget.SpeechWidgetService"
-                 android:permission="android.permission.BIND_REMOTEVIEWS"
-                 android:exported="false" />
+
+        <service
+            android:name=".ui.appwidget.SpeechWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
         <receiver android:name=".ui.appwidget.TestListWidgetProvider">
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/appwidget_list_provider" />
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_list_provider"/>
+
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.lf.inote.APPWIDGET_SPEECH" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.lf.inote.APPWIDGET_SPEECH"/>
             </intent-filter>
         </receiver>
-        <service android:name=".ui.appwidget.TestListService"
-                 android:permission="android.permission.BIND_REMOTEVIEWS"
-                 android:exported="false" />
+
+        <service
+            android:name=".ui.appwidget.TestListService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+        <activity android:name=".ui.robotchat.RobotChatActivity">
+        </activity>
     </application>
 
 </manifest>
