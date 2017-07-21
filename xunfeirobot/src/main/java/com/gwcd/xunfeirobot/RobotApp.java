@@ -6,7 +6,9 @@
 package com.gwcd.xunfeirobot;
 
 import android.app.Application;
+import android.content.Intent;
 
+import com.gwcd.speech.wakeup.WuWakeUpListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 
@@ -27,8 +29,34 @@ public class RobotApp extends Application {
         super.onCreate();
 
         mInstance = this;
-        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=584f7042");
+        String wujiaId = "58e74825";
+        String testId = "584f7042";
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + wujiaId);
+
+//        WuWakeUpUtility.getInstance().initWakeUp(this, mWakeUpListener);
+//        WuWakeUpUtility.getInstance().startWakeUpListening();
     }
+
+    private WuWakeUpListener mWakeUpListener = new WuWakeUpListener() {
+        @Override
+        public void onStartListening() {
+            System.out.println("--debug onStartListening");
+        }
+
+        @Override
+        public void onWakeUp(String word) {
+            System.out.println("--debug onWakeUp");
+            Intent intent = new Intent(mInstance, SematicActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("fromWakeUp", true);
+            startActivity(intent);
+        }
+
+        @Override
+        public void onStopListening() {
+            System.out.println("--debug onStopListening");
+        }
+    };
 
     public static RobotApp getInstance() {
         return mInstance;

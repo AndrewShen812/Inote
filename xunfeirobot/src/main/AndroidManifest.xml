@@ -12,7 +12,6 @@
 
     <!-- 允许程序改变网络连接状态 -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
@@ -22,13 +21,59 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <!-- begin: baidu speech sdk -->
+        <meta-data
+            android:name="com.baidu.speech.APP_ID"
+            android:value="5386651"/>
+        <meta-data
+            android:name="com.baidu.speech.API_KEY"
+            android:value="zcYldRGuGNjslB0aHF2s6OI9"/>
+        <meta-data
+            android:name="com.baidu.speech.SECRET_KEY"
+            android:value="G3tN80beCGvYtKwvo2nvufBGiHGo65Ce"/>
+
+        <service
+            android:name="com.baidu.speech.VoiceRecognitionService"
+            android:exported="false"/>
+        <!-- end : baidu speech sdk -->
+
+        <!--<activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>-->
+        <!--
+        <activity
+            android:name=".SematicActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        -->
+        <!--
+        <activity android:name=".TextSemanticActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        -->
+        <activity android:name=".RecognizeFileActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
 
         <!-- 桌面小插件配置 -->
         <receiver android:name=".appwidget.SpeechWidgetProvider">

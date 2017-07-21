@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:src="@drawable/icon_robot"/>
+            android:src="@mipmap/icon_robot"/>
 
         <TextView
             android:id="@+id/tv_app_widget_item_robot"

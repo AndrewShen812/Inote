@@ -1,1 +1,2 @@
-include ':app', ':bd_speech_lib', ':xunfei_speech_lib', ':xunfeirobot'
+//include ':bd_speech_lib', ':xunfei_speech_lib', ':xunfeirobot', ':wujia_speech_lib'
+include ':xunfeirobot', ':wujia_speech_lib', ':wujia_wakeup_lib'
