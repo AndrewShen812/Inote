@@ -31,6 +31,7 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
     private AudioRecorder mRecorder;
     private SpeechRecognizer mSpeechRecognizer;
     private static final String CACHE_PATH = "/storage/sdcard0/speechVoice/record.pcm";
+    private AudioRecordView mAudioView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,11 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
                 isSessionOver = false;
                 mSpeechRecognizer.startListening(mRecoListener);
                 writeAudioToRecogniser();
+            }
+
+            @Override
+            public void onGetVolume(int volume) {
+                mAudioView.addAudioData(volume);
             }
         });
         initRecogniser();
@@ -87,10 +93,11 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
     }
 
     private void initViews() {
-        setTitle("语音文件解析");
+        setTitle("端点检测");
         mTvRobot = (TextView) findViewById(R.id.tv_app_widget_item_robot);
         mTvUser = (TextView) findViewById(R.id.tv_app_widget_item_user);
         mIVPseech = (ImageView) findViewById(R.id.iv_app_widget_speech);
+        mAudioView = (AudioRecordView) findViewById(R.id.audio_chart);
         mIVPseech.setOnTouchListener(this);
     }
 

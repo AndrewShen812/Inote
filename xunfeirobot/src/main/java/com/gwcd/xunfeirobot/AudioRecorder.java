@@ -36,6 +36,7 @@ public class AudioRecorder implements Runnable{
     private String mCachePath;
     public static final int MSG_START_RECORDING = 10086;
     public static final int MSG_STOP_RECORDING = 10087;
+    public static final int MSG_REPORT_VOLUME = 10088;
 
     private AudioRecorder() {
         initAudioRecord();
@@ -45,6 +46,7 @@ public class AudioRecorder implements Runnable{
     public interface OnRecordListener {
         void onStartRecording();
         void onStopRecording();
+        void onGetVolume(int volume);
     }
 
     private OnRecordListener mRecordListener;
@@ -61,6 +63,11 @@ public class AudioRecorder implements Runnable{
                 case MSG_STOP_RECORDING:
                     if (mRecordListener != null) {
                         mRecordListener.onStopRecording();
+                    }
+                    break;
+                case MSG_REPORT_VOLUME:
+                    if (mRecordListener != null) {
+                        mRecordListener.onGetVolume(msg.arg1);
                     }
                     break;
             }
@@ -173,9 +180,6 @@ public class AudioRecorder implements Runnable{
                 e.printStackTrace();
             }
         }
-        boolean begin = false;
-        int silenceTime = 0;
-        int startSpeechTime = 0;
         while (isRecording) {
             //实际读取的数据长度，一般会小于buffersize
             int readSize = mAudioRecord.read(buffer, 0, mMinBufferSize);
@@ -186,8 +190,12 @@ public class AudioRecorder implements Runnable{
             }
             long durationMs = (long) (readSize * 1f / (SAMPLE_RATE * 16 / 8) * 1000);
             double volume = getVolume(buffer, readSize);
+            Message msg = mMsgHandler.obtainMessage(MSG_REPORT_VOLUME);
+            msg.arg1 = (int) volume;
+            msg.sendToTarget();
             Log.d(TAG, "分贝值:" + volume + ", 时长：" + durationMs);
             // TODO: 2017/7/19 端点检测
+            /** 短时能量、短时过零率、窗函数 */
             boolean writeFile = false;
             if (writeFile && dos != null) {
                 try {
