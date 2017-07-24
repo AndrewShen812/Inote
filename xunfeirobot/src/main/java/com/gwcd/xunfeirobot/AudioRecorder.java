@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static android.os.Build.VERSION_CODES.N;
+
 /**
  * Created by sy on 2017/7/19.<br>
  * Function: <br>
@@ -37,8 +39,10 @@ public class AudioRecorder implements Runnable{
     public static final int MSG_START_RECORDING = 10086;
     public static final int MSG_STOP_RECORDING = 10087;
     public static final int MSG_REPORT_VOLUME = 10088;
+    private FFT mFFT;
 
     private AudioRecorder() {
+        mFFT = new FFT();
         initAudioRecord();
     }
 
@@ -112,6 +116,10 @@ public class AudioRecorder implements Runnable{
             mCacheFile = new File(mCachePath);
         }
         try {
+            File parent = mCacheFile.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
             if (mCacheFile.exists()) {
                 mCacheFile.delete();
             }
@@ -196,6 +204,11 @@ public class AudioRecorder implements Runnable{
             Log.d(TAG, "分贝值:" + volume + ", 时长：" + durationMs);
             // TODO: 2017/7/19 端点检测
             /** 短时能量、短时过零率、窗函数 */
+            float[] fftIO = new float[FFT.FFT_N];
+            for (int i = 0; i < readSize; i++) {
+                fftIO[i] = buffer[i];
+            }
+            mFFT.calculate(fftIO);
             boolean writeFile = false;
             if (writeFile && dos != null) {
                 try {
@@ -234,6 +247,17 @@ public class AudioRecorder implements Runnable{
         avgVolume = sumVolume / readSize / 2;
         volume = Math.log10(1 + avgVolume) * 10;
         return volume;
+    }
+
+    private static final double PI = 3.14159265358979323846;
+    /**
+     * 窗函数。使用hamming窗。<br>
+     *     定义：w(n) = 0.54 - 0.46 * (2 * PI * n / (N - 1)) , 0<=n<=N-1<br>
+     *     ？N表示窗长度？
+     * @return
+     */
+    private double window(int n) {
+        return 0.54 - 0.46 * Math.cos((2 * Math.PI * n / (N - 1)));
     }
 }
 

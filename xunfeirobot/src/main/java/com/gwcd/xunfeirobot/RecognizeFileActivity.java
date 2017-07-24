@@ -1,6 +1,12 @@
 package com.gwcd.xunfeirobot;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,6 +22,7 @@ import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -30,8 +37,10 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
     private static final String TAG = "RobotApp";
     private AudioRecorder mRecorder;
     private SpeechRecognizer mSpeechRecognizer;
-    private static final String CACHE_PATH = "/storage/sdcard0/speechVoice/record.pcm";
+    private static final String CACHE_PATH = Environment.getExternalStorageDirectory().toString()
+            + File.separator + "speechVoice/record.pcm";
     private AudioRecordView mAudioView;
+    private boolean permissionGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +49,6 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
         initViews();
 
         mRecorder = AudioRecorder.getInstance();
-        mRecorder.setCacheFile(CACHE_PATH);
         mRecorder.setRecordListener(new AudioRecorder.OnRecordListener() {
             @Override
             public void onStartRecording() {}
@@ -58,7 +66,51 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
                 mAudioView.addAudioData(volume);
             }
         });
+        if (checkPermission()) {
+            permissionGranted = true;
+            mRecorder.setCacheFile(CACHE_PATH);
+        } else {
+            requestPermission();
+        }
         initRecogniser();
+    }
+
+    private boolean checkPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static final int REQUEST_PERM_CODE = 1000;
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
+                REQUEST_PERM_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERM_CODE) {
+            if (grantResults.length > 0) {
+                int grantedCnt = 0;
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        grantedCnt ++;
+                    }
+                }
+                if (grantedCnt == grantResults.length) {
+                    permissionGranted = true;
+                    mRecorder.setCacheFile(CACHE_PATH);
+                    mRecorder.startRecording();
+                } else {
+                    permissionGranted = false;
+                    showTip("未授权相关权限");
+                }
+            } else {
+                permissionGranted = false;
+                showTip("未授权相关权限");
+            }
+        }
     }
 
     private boolean isSessionOver;
@@ -120,7 +172,9 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
     @Override
     protected void onResume() {
         super.onResume();
-        mRecorder.startRecording();
+        if (permissionGranted) {
+            mRecorder.startRecording();
+        }
     }
 
     private void updateTalkMsg(String robotMsg, String userMsg) {
