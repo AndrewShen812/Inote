@@ -75,6 +75,20 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
         initRecogniser();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (permissionGranted) {
+            mRecorder.startRecording();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mRecorder.stopRecording();
+    }
+
     private boolean checkPermission() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
@@ -167,14 +181,6 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
                 return true;
         }
         return false;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (permissionGranted) {
-            mRecorder.startRecording();
-        }
     }
 
     private void updateTalkMsg(String robotMsg, String userMsg) {
