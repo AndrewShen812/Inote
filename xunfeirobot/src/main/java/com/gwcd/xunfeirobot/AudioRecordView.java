@@ -42,7 +42,9 @@ public class AudioRecordView extends View {
     private static final int CHART_MARGIN = 24; // 8dp
     int width, height;
     private LinkedList<Point> mData;
+    private LinkedList<Point> mZcrData;
     private Path mPath;
+    private Path mPathZcr;
     private int step;
     private void init(Context context) {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -50,7 +52,9 @@ public class AudioRecordView extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(8);
         mData = new LinkedList<>();
+        mZcrData = new LinkedList<>();
         mPath = new Path();
+        mPathZcr = new Path();
     }
 
     @Override
@@ -69,21 +73,30 @@ public class AudioRecordView extends View {
         canvas.drawLine(CHART_MARGIN, 0, CHART_MARGIN, height - CHART_MARGIN, mPaint);
         canvas.drawLine(CHART_MARGIN, height - CHART_MARGIN, width, height - CHART_MARGIN, mPaint);
         mPath.reset();
+        mPathZcr.reset();
         for (int i = 0; i < mData.size(); i++) {
             Point p = mData.get(i);
+            Point pZcr = mZcrData.get(i);
             if (i == 0) {
                 mPath.moveTo(p.x, p.y);
+                mPathZcr.moveTo(pZcr.x, pZcr.y);
             } else {
                 mPath.lineTo(p.x, p.y);
+                mPathZcr.lineTo(pZcr.x, pZcr.y);
             }
         }
         mPaint.setColor(Color.BLUE);
         mPaint.setStrokeWidth(4);
         canvas.drawPath(mPath, mPaint);
+
+        mPaint.setColor(Color.RED);
+        mPaint.setStrokeWidth(4);
+        canvas.drawPath(mPathZcr, mPaint);
     }
 
     private static final int MAX_SIZE = 100;
-    public void addAudioData(int data) {
+    public void addData(int data, float zcr) {
+        // 音量
         if (mData.size() >= MAX_SIZE) {
             mData.removeFirst();
         }
@@ -92,11 +105,26 @@ public class AudioRecordView extends View {
             p.x += step;
         }
         mData.add(new Point(CHART_MARGIN, getShowVolume(data)));
+        // 过零率
+        if (mZcrData.size() >= MAX_SIZE) {
+            mZcrData.removeFirst();
+        }
+        for (int i = 0; i < mZcrData.size(); i++) {
+            Point p = mZcrData.get(i);
+            p.x += step;
+        }
+        mZcrData.add(new Point(CHART_MARGIN, getShowZcr(zcr)));
+
         invalidate();
     }
 
     private int getShowVolume(int realVolume) {
         float percent = 1 - realVolume / 100f;
         return (int) ((height - CHART_MARGIN) * percent);
+    }
+
+    private int getShowZcr(float zcr) {
+        float percent = 1 - zcr;
+        return (int) ((height - CHART_MARGIN) / 2 * percent);
     }
 }

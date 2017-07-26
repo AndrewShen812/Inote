@@ -62,8 +62,8 @@ public class RecognizeFileActivity extends AppCompatActivity implements View.OnT
             }
 
             @Override
-            public void onGetVolume(int volume) {
-                mAudioView.addAudioData(volume);
+            public void onGetVolume(int volume, float zcr) {
+                mAudioView.addData(volume, zcr);
             }
         });
         if (checkPermission()) {

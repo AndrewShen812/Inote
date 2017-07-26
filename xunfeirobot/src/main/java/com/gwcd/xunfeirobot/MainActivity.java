@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mIVPseech;
 
     private static final String TAG = "RobotApp";
-    private AudioRecorder mRecorder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +38,6 @@ public class MainActivity extends AppCompatActivity {
         mTvRobot = (TextView) findViewById(R.id.tv_app_widget_item_robot);
         mTvUser = (TextView) findViewById(R.id.tv_app_widget_item_user);
         mIVPseech = (ImageView) findViewById(R.id.iv_app_widget_speech);
-        mRecorder = AudioRecorder.getInstance();
-        mRecorder.setCacheFile("/storage/sdcard0/speechVoice/record.pcm");
-        mRecorder.startRecording();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mRecorder.stopRecording();
     }
 
     private void updateTalkMsg(String robotMsg, String userMsg) {
