@@ -1,7 +1,6 @@
 package com.lf.inote.ui.note;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,12 +13,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.baidu.speech.VoiceRecognitionService;
 import com.lf.inote.NoteApp;
 import com.lf.inote.R;
 import com.lf.inote.db.NoteDBImpl;
 import com.lf.inote.model.Note;
-import com.lf.inote.ui.Constant;
 import com.lf.inote.ui.MainActivity;
 import com.lf.inote.utils.StringUtils;
 import com.lf.inote.utils.TimeUtil;
@@ -44,8 +41,6 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
     
     private Context mContext;
 
-    private SpeechRecognizer mSpeechRecognizer;
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,9 +49,6 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
         
         mContext = this;
 
-        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this, new ComponentName(this, VoiceRecognitionService.class));
-        mSpeechRecognizer.setRecognitionListener(this);
-        
         initView();
         initData();
     }
@@ -154,23 +146,6 @@ public class EditNoteActivity extends Activity implements RecognitionListener {
     private static final int REQUEST_UI = 1;
 
     public void onSpeechInput(View view) {
-        Intent intent = new Intent("com.baidu.action.RECOGNIZE_SPEECH");
-        bindParams(intent);
-//        startActivityForResult(intent, REQUEST_UI);
-        mSpeechRecognizer.startListening(intent);
-    }
-
-    public void bindParams(Intent intent) {
-        intent.putExtra("args", "");
-        intent.putExtra(Constant.EXTRA_SOUND_START, R.raw.bdspeech_recognition_start);
-        intent.putExtra(Constant.EXTRA_SOUND_END, R.raw.bdspeech_speech_end);
-        intent.putExtra(Constant.EXTRA_SOUND_SUCCESS, R.raw.bdspeech_recognition_success);
-        intent.putExtra(Constant.EXTRA_SOUND_ERROR, R.raw.bdspeech_recognition_error);
-        intent.putExtra(Constant.EXTRA_SOUND_CANCEL, R.raw.bdspeech_recognition_cancel);
-
-        intent.putExtra(Constant.EXTRA_INFILE, "");
-        intent.putExtra(Constant.EXTRA_LANGUAGE, "cmn-Hans-CN");
-        intent.putExtra(Constant.EXTRA_NLU, "enable");
     }
 
     @Override
